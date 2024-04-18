@@ -1,6 +1,17 @@
 const TelegramBot = require("node-telegram-bot-api");
 require("dotenv").config(); // Load environment variables from .env file
 
+const express = require("express");
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
+const port = 3000;
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+
 const token = process.env.TELEGRAM_BOT_TOKEN;
 const bot = new TelegramBot(token, { polling: true });
 
