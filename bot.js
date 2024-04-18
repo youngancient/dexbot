@@ -347,7 +347,7 @@ bot.on("message", (msg) => {
         if (messageText === "✅ Confirm") {
           // send message
           const message =
-            `💬 Admin Message 💋 \n` +
+            `💬 *Admin Message* 💋 \n` +
             `------------------------\n\n` +
             `*Your Dex is Live* :- ${adminUserMessage.dexLink}\n` +
             `*Dex was listed here* : ${adminUserMessage.tgLink}\n`;
