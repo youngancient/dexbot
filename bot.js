@@ -13,7 +13,7 @@ app.listen(port, () => {
 });
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const bot = new TelegramBot(token, { polling: false });
+const bot = new TelegramBot(token, { polling: true });
 
 // keyboards
 function createCustomKeyboard() {
