@@ -348,7 +348,7 @@ bot.on("message", (msg) => {
           // send message
           const message =
             `💬 *Admin Message* 💋 \n` +
-            `------------------------\n\n` +
+            `--------------------------------\n\n` +
             `*Your Dex is Live* :- ${adminUserMessage.dexLink}\n` +
             `*Dex was listed here* : ${adminUserMessage.tgLink}\n`;
           sendImageAndCaption(
