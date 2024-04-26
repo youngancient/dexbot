@@ -128,7 +128,7 @@ async function handleImageUpload(chatId, message) {
           `_Token Address:_ \`${userState.contractAddress}\`\n` +
           `_Telegram Link:_ [Telegram](${userState.telegramLink})\n` +
           `_Twitter Link:_ [Twitter](${userState.twitterLink})\n` +
-          `_Uploaded LogoFile:_ ${userState.hasLogo}\n\n` +
+          `_Uploaded LogoFile:_ ${userState.hasLogo}\n` +
           `_Uploaded BgFile:_ ${userState.hasBg}\n\n` +
           `_(If there's any error, press cancel to restart)_`,
         { parse_mode: "Markdown", reply_markup: replyMarkup }
