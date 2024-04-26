@@ -126,9 +126,10 @@ async function handleImageUpload(chatId, message) {
           `_Chain:_ ${userState.chain}\n` +
           `_Token Symbol:_ ${userState.symbol}\n` +
           `_Token Address:_ \`${userState.contractAddress}\`\n` +
-          `_Telegram Link:_ ${userState.telegramLink}\n` +
-          `_Twitter Link:_ ${userState.twitterLink}\n` +
+          `_Telegram Link:_ [Telegram](${userState.telegramLink})\n` +
+          `_Twitter Link:_ [Twitter](${userState.twitterLink})\n` +
           `_Uploaded LogoFile:_ ${userState.hasLogo}\n\n` +
+          `_Uploaded BgFile:_ ${userState.hasBg}\n\n` +
           `_(If there's any error, press cancel to restart)_`,
         { parse_mode: "Markdown", reply_markup: replyMarkup }
       );
@@ -150,6 +151,49 @@ async function handleImageUpload(chatId, message) {
       );
   }
 }
+async function handleBgUpload(chatId, message) {
+  try {
+    // Assuming message.photo contains the uploaded image
+    if (message.photo) {
+      const photo = message.photo[message.photo.length - 1]; // Get the highest resolution photo
+      const photoId = photo.file_id;
+      const file = await bot.getFile(photoId);
+      const bgUrl = `https://api.telegram.org/file/bot${token}/${file.file_path}`;
+      console.log("bg was uploaded", bgUrl);
+      userState.bgUrl = bgUrl;
+      userState.hasBg = true;
+      const replyMarkup = createCancelKeyboard();
+      // Use getFile method to get the file path of the uploaded image
+      bot
+        .sendMessage(
+          chatId,
+          "📤 Please upload your Project (Token) Logo.\n\n_ (upload Logo file here) _",
+          { parse_mode: "Markdown", reply_markup: replyMarkup }
+        )
+        .then(() => {
+          dexBot.state = "review";
+          console.log("done");
+        })
+        .catch((error) =>
+          console.error("Error sending message with keyboard:", error)
+        );
+    }
+  } catch (error) {
+    console.error("Error handling bg upload:", error);
+    // Handle the error here, such as sending a message to the user or logging it
+    const replyMarkup = createCancelKeyboard();
+    bot
+      .sendMessage(
+        chatId,
+        "📤 An Error occurred while handling the background image.\nIf you don't have any valid image, input :- none \n\n_ (upload Bg file here) _",
+        { parse_mode: "Markdown", reply_markup: replyMarkup }
+      )
+      .then(() => (dexBot.state = "img"))
+      .catch((error) =>
+        console.error("Error sending message with keyboard:", error)
+      );
+  }
+}
 
 // Assuming userState object contains the necessary data
 async function forwardOrderSummary(chatId, receiverUsername) {
@@ -165,8 +209,10 @@ async function forwardOrderSummary(chatId, receiverUsername) {
       `Token Address : ${userState.contractAddress}\n` +
       `Telegram Link : ${userState.telegramLink}\n` +
       `Twitter Link : ${userState.twitterLink}\n` +
-      `LogoFile Link : ${userState.logoUrl}\n` +
+      `Uploaded BgFile : ${userState.hasBg}\n` +
+      `BgFile Link : ${userState.bgUrl}\n` +
       `Uploaded LogoFile : ${userState.hasLogo}\n` +
+      `LogoFile Link : ${userState.logoUrl}\n` +
       `Payment Link/Hash : ${userState.paymentLink}\n\n` +
       `(To be delivered in 3 - 5 hours)`;
     // Forward the message to the receiver username
@@ -232,7 +278,9 @@ let userState = {
   telegramLink: "",
   twitterLink: "",
   logoUrl: "",
+  bgUrl: "",
   hasLogo: false,
+  hasBg: false,
   paymentLink: "",
 };
 
@@ -527,7 +575,7 @@ function handleUserResponse(msg, currentState) {
           "🔠 Please enter your Project Twitter Link.\n\n_ If you don't have input :- none _",
           { parse_mode: "Markdown", reply_markup: replyMarkup }
         )
-        .then(() => (dexBot.state = "img"))
+        .then(() => (dexBot.state = "bg"))
         .catch((error) =>
           console.error("Error sending message with keyboard:", error)
         );
@@ -545,7 +593,7 @@ function handleUserResponse(msg, currentState) {
           console.error("Error sending message with keyboard:", error)
         );
     }
-  } else if (currentState === "img") {
+  } else if (currentState === "bg") {
     if (messageText === "🚫 Cancel" || messageText == "") {
       backToSelectChain(chatId);
     } else if (isUrl(messageText) || messageText.toLowerCase() == "none") {
@@ -554,10 +602,10 @@ function handleUserResponse(msg, currentState) {
       bot
         .sendMessage(
           chatId,
-          "📤 Please upload your Project (Token) Logo.\n\n_ (upload Logo file here) _",
+          "📤 Please upload your preferred swap background ( 1920 x 1154px ).\nIf you don't have any, input :- none \n\n_ (upload Logo file here) _",
           { parse_mode: "Markdown", reply_markup: replyMarkup }
         )
-        .then(() => (dexBot.state = "review"))
+        .then(() => (dexBot.state = "img"))
         .catch((error) =>
           console.error("Error sending message with keyboard:", error)
         );
@@ -570,10 +618,45 @@ function handleUserResponse(msg, currentState) {
           "🔠 Please enter a Valid Twitter Link.\n\n_ If you don't have input :- none _",
           { parse_mode: "Markdown", reply_markup: replyMarkup }
         )
-        .then(() => (dexBot.state = "img"))
+        .then(() => (dexBot.state = "bg"))
         .catch((error) =>
           console.error("Error sending message with keyboard:", error)
         );
+    }
+  } else if (currentState === "img") {
+    if (messageText === "🚫 Cancel" || messageText == "") {
+      backToSelectChain(chatId);
+    } else {
+      if (msg.photo) {
+        handleBgUpload(chatId, msg); //this
+      } else if (messageText.toLowerCase() == "none") {
+        const replyMarkup = createCancelKeyboard();
+        userState.bgUrl = messageText;
+        bot
+          .sendMessage(
+            chatId,
+            "📤 Please upload your Project (Token) Logo.\n\n_ (upload Logo file here) _",
+            { parse_mode: "Markdown", reply_markup: replyMarkup }
+          )
+          .then(() => (dexBot.state = "review"))
+          .catch((error) =>
+            console.error("Error sending message with keyboard:", error)
+          );
+      }
+      // ask user to reenter twitter link
+      else {
+        const replyMarkup = createCancelKeyboard();
+        bot
+          .sendMessage(
+            chatId,
+            "📤 Invalid Input!!!\n\n_ Please upload your preferred background image. _",
+            { parse_mode: "Markdown", reply_markup: replyMarkup }
+          )
+          .then(() => (dexBot.state = "img"))
+          .catch((error) =>
+            console.error("Error sending message with keyboard:", error)
+          );
+      }
     }
   } else if (currentState === "review") {
     if (messageText === "🚫 Cancel" || messageText == "") {
