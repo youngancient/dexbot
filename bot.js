@@ -377,7 +377,7 @@ bot.on("message", (msg) => {
         adminUserMessage.tgLink = messageText;
         const replyMarkup = createCancelKeyboard();
         bot
-          .sendMessage(chatId, "Link to X-tweet:", {
+          .sendMessage(chatId, "Link to X tweet:", {
             reply_markup: replyMarkup,
           })
           .then(() => (adminBot.state = "confirm"))
@@ -393,8 +393,8 @@ bot.on("message", (msg) => {
             `*Confirm message to be sent!* \n\n` +
               `_UserID :_ ${adminUserMessage.userId}\n` +
               `_User DexLink_ : ${adminUserMessage.dexLink}\n` +
-              `_X Tweet_ : ${adminUserMessage.xLink}\n` +
-              `_TG Post :_ ${adminUserMessage.tgLink}\n`,
+              `_TG Post :_ ${adminUserMessage.tgLink}\n` +
+              `_X Tweet_ : ${adminUserMessage.xLink}\n`,
             {
               parse_mode: "Markdown",
               reply_markup: replyMarkup,
@@ -412,6 +412,7 @@ bot.on("message", (msg) => {
             `--------------------------------\n\n` +
             `*Your Dex is Live* :- ${adminUserMessage.dexLink}\n` +
             `*Dex was listed here* : ${adminUserMessage.tgLink}\n`;
+            `*Link to X Tweet* : ${adminUserMessage.xLink}\n`;
           sendImageAndCaption(
             adminUserMessage.userId,
             chatId,
