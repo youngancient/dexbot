@@ -388,13 +388,14 @@ bot.on("message", (msg) => {
         adminUserMessage.xLink = messageText;
         const replyMarkup = createConfirmKeyboard();
         bot
+        jjj
           .sendMessage(
             chatId,
             `*Confirm message to be sent!* \n\n` +
               `_UserID :_ ${adminUserMessage.userId}\n` +
-              `_User DexLink_ : ${adminUserMessage.dexLink}\n` +
-              `_TG Post :_ ${adminUserMessage.tgLink}\n` +
-              `_X Tweet_ : ${adminUserMessage.xLink}\n`,
+              `_User DexLink :_ [Dexlink](${adminUserMessage.dexLink})\n` +
+              `_TG Post :_ [Channel Post](${adminUserMessage.tgLink})\n` +
+              `_X Tweet :_ [X Tweet](${adminUserMessage.xLink})\n`,
             {
               parse_mode: "Markdown",
               reply_markup: replyMarkup,
