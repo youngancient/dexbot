@@ -374,7 +374,7 @@ bot.on("message", (msg) => {
             console.error("Error sending message with keyboard:", error)
           );
       }else if (adminBot.state == "xlink") {
-        adminUserMessage.dexLink = messageText;
+        adminUserMessage.tgLink = messageText;
         const replyMarkup = createCancelKeyboard();
         bot
           .sendMessage(chatId, "Link to X-tweet:", {
