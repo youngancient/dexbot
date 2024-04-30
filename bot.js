@@ -320,6 +320,7 @@ const adminUserMessage = {
   userId: "",
   dexLink: "",
   tgLink: "",
+  xLink : "",
 };
 bot.on("message", (msg) => {
   const chatId = msg.chat.id;
@@ -365,15 +366,26 @@ bot.on("message", (msg) => {
         adminUserMessage.dexLink = messageText;
         const replyMarkup = createCancelKeyboard();
         bot
-          .sendMessage(chatId, "Link to TG Channel:", {
+          .sendMessage(chatId, "Link to TG Post:", {
+            reply_markup: replyMarkup,
+          })
+          .then(() => (adminBot.state = "xlink"))
+          .catch((error) =>
+            console.error("Error sending message with keyboard:", error)
+          );
+      }else if (adminBot.state == "xlink") {
+        adminUserMessage.dexLink = messageText;
+        const replyMarkup = createCancelKeyboard();
+        bot
+          .sendMessage(chatId, "Link to X-tweet:", {
             reply_markup: replyMarkup,
           })
           .then(() => (adminBot.state = "confirm"))
           .catch((error) =>
             console.error("Error sending message with keyboard:", error)
           );
-      } else if (adminBot.state == "confirm") {
-        adminUserMessage.tgLink = messageText;
+      }  else if (adminBot.state == "confirm") {
+        adminUserMessage.xLink = messageText;
         const replyMarkup = createConfirmKeyboard();
         bot
           .sendMessage(
@@ -381,7 +393,8 @@ bot.on("message", (msg) => {
             `*Confirm message to be sent!* \n\n` +
               `_UserID :_ ${adminUserMessage.userId}\n` +
               `_User DexLink_ : ${adminUserMessage.dexLink}\n` +
-              `_Link to channel :_ ${adminUserMessage.tgLink}\n`,
+              `_X Tweet_ : ${adminUserMessage.xLink}\n` +
+              `_TG Post :_ ${adminUserMessage.tgLink}\n`,
             {
               parse_mode: "Markdown",
               reply_markup: replyMarkup,
