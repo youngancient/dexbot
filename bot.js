@@ -411,7 +411,7 @@ bot.on("message", (msg) => {
             `💬 *Admin Message* 💋 \n` +
             `--------------------------------\n\n` +
             `*Your Dex is Live* :- ${adminUserMessage.dexLink}\n` +
-            `*Dex was listed here* : ${adminUserMessage.tgLink}\n`;
+            `*Dex was listed here* : ${adminUserMessage.tgLink}\n` +
             `*Link to X Tweet* : ${adminUserMessage.xLink}\n`;
           sendImageAndCaption(
             adminUserMessage.userId,
