@@ -388,7 +388,6 @@ bot.on("message", (msg) => {
         adminUserMessage.xLink = messageText;
         const replyMarkup = createConfirmKeyboard();
         bot
-        jjj
           .sendMessage(
             chatId,
             `*Confirm message to be sent!* \n\n` +
