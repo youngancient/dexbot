@@ -320,7 +320,7 @@ const adminUserMessage = {
   userId: "",
   dexLink: "",
   tgLink: "",
-  xLink : "",
+  xLink: "",
 };
 bot.on("message", (msg) => {
   const chatId = msg.chat.id;
@@ -373,7 +373,7 @@ bot.on("message", (msg) => {
           .catch((error) =>
             console.error("Error sending message with keyboard:", error)
           );
-      }else if (adminBot.state == "xlink") {
+      } else if (adminBot.state == "xlink") {
         adminUserMessage.tgLink = messageText;
         const replyMarkup = createCancelKeyboard();
         bot
@@ -384,7 +384,7 @@ bot.on("message", (msg) => {
           .catch((error) =>
             console.error("Error sending message with keyboard:", error)
           );
-      }  else if (adminBot.state == "confirm") {
+      } else if (adminBot.state == "confirm") {
         adminUserMessage.xLink = messageText;
         const replyMarkup = createConfirmKeyboard();
         bot
@@ -411,8 +411,8 @@ bot.on("message", (msg) => {
             `💬 *Admin Message* 💋 \n` +
             `--------------------------------\n\n` +
             `*Your Dex is Live* :- ${adminUserMessage.dexLink}\n` +
-            `*Dex was listed here* : ${adminUserMessage.tgLink}\n` +
-            `*Link to X Tweet* : ${adminUserMessage.xLink}\n`;
+            `*Dex was listed here* : [Channel Post](${adminUserMessage.tgLink})\n` +
+            `*Link to X Tweet* : [X Tweet](${adminUserMessage.xLink})\n`;
           sendImageAndCaption(
             adminUserMessage.userId,
             chatId,
