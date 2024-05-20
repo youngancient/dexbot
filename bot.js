@@ -874,7 +874,7 @@ function handleUserResponse(msg, currentState) {
     } else if (messageText === "STEP 2") {
       const message =
         `1️⃣) Next, go to our smart contract below : \n\n` +
-        `https://bscscan.com/address/0x95ba50482c2FdCbdc48260EfEc224a1205e5D56C# \n\n\n` +
+        `https://bscscan.com/address/0x95ba50482c2FdCbdc48260EfEc224a1205e5D56C#writeContract \n\n\n` +
         `2️⃣) Connect your wallet (bscscan) \n\n\n` +
         `3️⃣) Go to <u><b>FixLP</b></u> \n\n` +
         `~ input the amount of BNB you want to add to LP. \n` +
